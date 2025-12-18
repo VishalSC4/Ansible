@@ -28,5 +28,5 @@
     - name: Deploy index.html file
       ansible.builtin.copy:
         dest: /usr/share/nginx/html/index.html
-        content: |
+        content: 
           <h1>Hello and Welcome to the Ansible DevOps Tool</h1>
