@@ -1,0 +1,32 @@
+---
+- name: Nginx installation Code
+  hosts: localhost
+  become: yes
+  tasks:
+
+    # Install nginx
+    - name: Install nginx
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+
+    # Start and enable nginx
+    - name: Start and enable nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+    # Create /var/www/html directory
+    - name: Ensure /var/www/html exists
+      ansible.builtin.file:
+        path: /var/www/html
+        state: directory
+        mode: '0755'
+
+    # Deploy index.html
+    - name: Deploy index.html file
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        content: |
+          <h1>Hello and Welcome to the Ansible DevOps Tool</h1>
