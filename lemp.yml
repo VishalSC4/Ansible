@@ -5,16 +5,19 @@
 
   tasks:
 
+#Install nginx
   - name: Install nginx
     ansible.builtin.dnf:
       name: nginx
       state: present
 
+#Install mariadb
   - name: Install mariadb
     ansible.builtin.dnf:
       name: mariadb105-server
       state: present
 
+#Install php and php-fpm
   - name: Install php and php-fpm
     ansible.builtin.dnf:
       name:
@@ -22,24 +25,28 @@
         - php-fpm
       state: present
 
+#Start and enable nginx
   - name: Start and enable nginx
     ansible.builtin.systemd:
       name: nginx
       state: started
       enabled: true
 
+#Start and enable mariadb
   - name: Start and enable mariadb
     ansible.builtin.systemd:
       name: mariadb
       state: started
       enabled: true
 
+#Start and enable php-fpm
   - name: Start and enable php-fpm
     ansible.builtin.systemd:
       name: php-fpm
       state: started
       enabled: true
 
+#Deploy PHP test file
   - name: Deploy PHP test file
     ansible.builtin.copy:
       dest: /usr/share/nginx/html/index.php
