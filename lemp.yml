@@ -1,0 +1,49 @@
+---
+- name: LEMP using Nginx
+  hosts: localhost
+  become: yes
+
+  tasks:
+
+  - name: Install nginx
+    ansible.builtin.dnf:
+      name: nginx
+      state: present
+
+  - name: Install mariadb
+    ansible.builtin.dnf:
+      name: mariadb105-server
+      state: present
+
+  - name: Install php and php-fpm
+    ansible.builtin.dnf:
+      name:
+        - php
+        - php-fpm
+      state: present
+
+  - name: Start and enable nginx
+    ansible.builtin.systemd:
+      name: nginx
+      state: started
+      enabled: true
+
+  - name: Start and enable mariadb
+    ansible.builtin.systemd:
+      name: mariadb
+      state: started
+      enabled: true
+
+  - name: Start and enable php-fpm
+    ansible.builtin.systemd:
+      name: php-fpm
+      state: started
+      enabled: true
+
+  - name: Deploy PHP test file
+    ansible.builtin.copy:
+      dest: /usr/share/nginx/html/index.php
+      content: |
+        <?php
+        phpinfo();
+        ?>
