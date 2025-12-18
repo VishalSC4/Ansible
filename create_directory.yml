@@ -1,0 +1,9 @@
+---
+- name: Create "Directory" commands
+  hosts: localhost
+  tasks:
+   - name: Create "Directory" commands
+     ansible.builtin.file:
+      path: /home/ec2-user/aws
+      state: directory
+      mode: '0700'

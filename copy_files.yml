@@ -1,0 +1,12 @@
+---
+- name: Copy files command
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Copy ansible.txt file
+      ansible.builtin.copy:
+        src: /etc/ansible/playbooks/create_file.yml
+        dest: /home/ec2-user/ansible.txt
+        owner: root
+        group: root
+        mode: '0644'
