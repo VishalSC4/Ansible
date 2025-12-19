@@ -1,0 +1,57 @@
+---
+- name: Lemp using variables
+  hosts: localhost
+  become: yes
+  vars:
+   web_pkg: nginx
+   db_pkg: mariadb105-server
+   php_pkg: 
+        - php
+        - php-fpm
+
+   web_server: nginx
+   db_server: mariadb
+   php_server: php-fpm
+   web_file: /usr/share/nginx/html/index.php
+
+  tasks:
+   - name: Install Nginx
+     ansible.builtin.dnf:
+      name: "{{web_pkg}}"
+      state: present
+
+   - name: Install Database
+     ansible.builtin.dnf:
+      name: "{{db_pkg}}"
+      state: present
+
+   - name: Install php
+     ansible.builtin.dnf:
+      name: "{{php_pkg}}"
+      state: present
+
+   - name: Start nginx
+     ansible.builtin.systemd:
+      name: "{{web_server}}"
+      state: started
+      enabled: true
+
+   - name: Start nginx
+     ansible.builtin.systemd:
+      name: "{{db_server}}"
+      state: started
+      enabled: true  
+
+   - name: Start nginx
+     ansible.builtin.systemd:
+      name: "{{php_server}}"
+      state: started
+      enabled: true  
+
+   - name: Deploy Web-Server
+     ansible.builtin.copy:
+      dest: "{{web_file}}"
+      content: |
+       <?php
+       phpinfo();
+       ?>

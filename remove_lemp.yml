@@ -1,0 +1,27 @@
+---
+- name: LEMP using Nginx
+  hosts: localhost
+  become: yes
+
+  tasks:
+
+#Install nginx
+  - name: Install nginx
+    ansible.builtin.dnf:
+      name: nginx
+      state: absent
+
+#Install mariadb
+  - name: Install mariadb
+    ansible.builtin.dnf:
+      name: mariadb105-server
+      state: absent
+
+#Install php and php-fpm
+  - name: Install php and php-fpm
+    ansible.builtin.dnf:
+      name:
+        - php
+        - php-fpm
+      state: absent
+
