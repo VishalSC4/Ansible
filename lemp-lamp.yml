@@ -1,0 +1,84 @@
+---
+- name: LEMP to LAMP
+  hosts: localhost
+  become: yes
+
+  vars:
+    # LEMP
+    lemp_web_pkg: nginx
+    lemp_php_pkg:
+      - php
+      - php-fpm
+    lemp_web_service: nginx
+    lemp_php_service: php-fpm
+
+    # LAMP
+    lamp_web_pkg: httpd
+    lamp_db_pkg: mariadb105-server
+    lamp_php_pkg:
+      - php
+      - php-mysqlnd
+    lamp_web_service: httpd
+    lamp_db_service: mariadb
+
+    lamp_web_path: /var/www/html/index.php
+
+  tasks:
+
+  # -------- STOP LEMP --------
+  - name: Stop and disable nginx
+    ansible.builtin.systemd:
+      name: "{{ lemp_web_service }}"
+      state: stopped
+      enabled: no
+    ignore_errors: yes
+
+  - name: Stop and disable php-fpm
+    ansible.builtin.systemd:
+      name: "{{ lemp_php_service }}"
+      state: stopped
+      enabled: no
+    ignore_errors: yes
+
+  - name: Remove nginx
+    ansible.builtin.dnf:
+      name: "{{ lemp_web_pkg }}"
+      state: absent
+
+  # -------- INSTALL LAMP --------
+  - name: Install Apache
+    ansible.builtin.dnf:
+      name: "{{ lamp_web_pkg }}"
+      state: present
+
+  - name: Install MariaDB
+    ansible.builtin.dnf:
+      name: "{{ lamp_db_pkg }}"
+      state: present
+
+  - name: Install PHP
+    ansible.builtin.dnf:
+      name: "{{ lamp_php_pkg }}"
+      state: present
+
+  # -------- START LAMP --------
+  - name: Start and enable Apache
+    ansible.builtin.systemd:
+      name: "{{ lamp_web_service }}"
+      state: started
+      enabled: yes
+
+  - name: Start and enable MariaDB
+    ansible.builtin.systemd:
+      name: "{{ lamp_db_service }}"
+      state: started
+      enabled: yes
+
+  # -------- DEPLOY TEST FILE --------
+  - name: Deploy PHP test file
+    ansible.builtin.copy:
+      dest: "{{ lamp_web_path }}"
+      content: |
+        <?php
+        phpinfo();
+        ?>
