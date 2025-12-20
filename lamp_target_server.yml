@@ -1,0 +1,30 @@
+---
+- name: Create a LAMP
+  hosts: targetserver
+  become: yes
+
+  tasks:
+
+  - name: Install LAMP packages
+    ansible.builtin.dnf:
+      name:
+        - httpd
+        - mariadb105-server
+        - php
+        - php-mysqlnd
+      state: present
+
+  - name: Start and enable services
+    ansible.builtin.systemd:
+      name: "{{ item }}"
+      state: started
+      enabled: true
+    loop:
+      - httpd
+      - mariadb
+
+  - name: Deploy HTTPD page
+    ansible.builtin.copy:
+      dest: /var/www/html/index.html
+      content: |
+       <h1>This is my target server</h1>

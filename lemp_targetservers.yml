@@ -1,0 +1,32 @@
+---
+- name: Lemp to target Servers
+  hosts: targetserver
+  become: yes
+
+  tasks:
+    - name: Install nginx, mariadb105-server, php, php-fpm
+      ansible.builtin.dnf:
+        name:
+          - nginx
+          - mariadb105-server
+          - php
+          - php-fpm
+        state: present
+
+    - name: Start and enable nginx, mariadb-server, php-fpm
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - nginx
+        - mariadb
+        - php-fpm
+
+    - name: Deploy PHP test page
+      ansible.builtin.copy:
+        dest: /usr/share/nginx/html/index.php
+        content: |
+          <?php
+          phpinfo();
+          ?>
