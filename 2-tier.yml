@@ -1,0 +1,66 @@
+---
+# =========================
+# App Server (Nginx + PHP)
+# =========================
+- name: Installation of app server
+  hosts: appserver
+  become: yes
+
+  vars:
+    packages:
+      - nginx
+      - php
+      - php-fpm
+    services:
+      - nginx
+      - php-fpm
+    web_file_path: /usr/share/nginx/html/index.php
+
+  tasks:
+    - name: Install nginx and php
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: present
+
+    - name: Start and enable services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop: "{{ services }}"
+
+    - name: Deploy PHP page
+      ansible.builtin.copy:
+        dest: "{{ web_file_path }}"
+        content: |
+          <?php
+          phpinfo();
+          ?>
+
+# =========================
+# Database Server (MariaDB)
+# =========================
+- name: Installation of database server
+  hosts: dbserver
+  become: yes
+
+  vars:
+    db_pkg: mariadb105-server
+    db_service: mariadb
+    db_name: Vishal
+
+  tasks:
+    - name: Install MariaDB server
+      ansible.builtin.dnf:
+        name: "{{ db_pkg }}"
+        state: present
+
+    - name: Start and enable MariaDB
+      ansible.builtin.systemd:
+        name: "{{ db_service }}"
+        state: started
+        enabled: true
+
+    - name: Create database
+      ansible.builtin.command:
+        cmd: mysql -u root -e "CREATE DATABASE IF NOT EXISTS {{ db_name }};"
