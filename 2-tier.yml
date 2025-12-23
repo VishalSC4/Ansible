@@ -64,3 +64,5 @@
     - name: Create database
       ansible.builtin.command:
         cmd: mysql -u root -e "CREATE DATABASE IF NOT EXISTS {{ db_name }};"
+
+        

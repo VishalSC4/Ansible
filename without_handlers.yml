@@ -1,0 +1,45 @@
+---
+- name: Install and Configure Nginx without Handlers
+  hosts: targetserver
+  become: yes
+
+  vars:
+    pkg: nginx
+    svc: nginx
+    path_file: /usr/share/nginx/html/
+    conf_path: /etc/nginx/conf.d/custom.conf
+
+  tasks:
+
+  - name: Install nginx
+    ansible.builtin.dnf:
+      name: "{{pkg}}"
+      state: present
+
+  - name: Start and enable nginx
+    ansible.builtin.systemd:
+      name: "{{svc}}"
+      state: started
+      enabled: true
+
+  - name: Create custom nginx configuration
+    ansible.builtin.copy:
+      dest: "{{ conf_path }}"
+      content: |
+        server {
+            listen 80;
+            server_name _;
+            
+            location / {
+                root {{path_file}}/index.html;
+                index index.html;
+            }
+        }
+
+  - name: Deploy index.html
+    ansible.builtin.copy:
+      dest: "{{path_file}}/index.html"
+      content: |
+        <h1>This app is without handlers</h1>
+
+
