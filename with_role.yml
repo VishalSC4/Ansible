@@ -1,0 +1,25 @@
+---
+- name: Install HTTPD using ansible role
+  hosts: targetserver
+  become: yes
+  vars:
+   - pkg: httpd
+   - svc: httpd
+   - file_path: /var/www/html/
+  tasks:
+- name: Inastall HTTPD
+  ansible.builtin.dnf:
+   name: "{{pkg}}"
+   state: present
+
+- name: Start and Enable HTTPD
+  ansible.builtin.systemd:
+   name: "{{svc}}"
+   state: started
+   enabled: true
+
+- name: Deploy PHP page
+  ansible.builtin.copy:
+  src: files/index.html
+  dest: "{{file_path}}"
+  
